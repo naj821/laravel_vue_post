@@ -2,8 +2,11 @@
 import { usePostsStore } from "@/stores/posts";
 import { reactive } from "vue";
 import { storeToRefs } from "pinia";
+import ButtonLoading from "@/components/ButtonLoading.vue";
+
 const { createPost } = usePostsStore();
 const { errors } = storeToRefs(usePostsStore());
+const isLoading = usePostsStore();
 
 const formData = reactive({
   title: "",
@@ -38,9 +41,10 @@ const formData = reactive({
       </div>
       <button
         type="submit"
-        class="primary-btn w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        class="primary-btn w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center justify-center"
       >
-        Create Post
+        <span v-if="!isLoading.loading">Create Post</span>
+        <ButtonLoading v-else />
       </button>
     </form>
   </div>

@@ -5,12 +5,11 @@ import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { useRoute, useRouter } from "vue-router";
 import LoadingIndicator from "@/components/LoadingGlobal.vue";
-import { useGlobalStore } from "@/stores/loading";
 
 const { getPost, updatePost } = usePostsStore();
 const { user } = storeToRefs(useAuthStore());
 const { errors } = storeToRefs(usePostsStore());
-const globalStore = useGlobalStore();
+const isLoading = usePostsStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -22,9 +21,7 @@ const formData = reactive({
   content: "",
 });
 onMounted(async () => {
-  globalStore.setLoading(true);
   post.value = await getPost(route.params.id);
-  globalStore.setLoading(false);
 
   if (user.value.id !== post.value.user.id) {
     router.push({ name: "home" });
@@ -36,7 +33,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <LoadingIndicator v-if="globalStore.loading" />
+  <LoadingIndicator v-if="isLoading.loading" />
   <div v-else class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-6 text-center">Update your post</h2>
     <form

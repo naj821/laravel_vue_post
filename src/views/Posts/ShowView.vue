@@ -3,25 +3,22 @@ import { usePostsStore } from "@/stores/posts";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useGlobalStore } from "@/stores/loading";
 import LoadingIndicator from "@/components/LoadingGlobal.vue";
 
 const route = useRoute();
 const { getPost, deletePost } = usePostsStore();
 const authStore = useAuthStore();
-const globalStore = useGlobalStore();
+const isLoading = usePostsStore();
 const post = ref({});
 
 onMounted(async () => {
-  globalStore.setLoading(true);
   post.value = await getPost(route.params.id);
-  globalStore.setLoading(false);
 });
 </script>
 
 <template>
   <main>
-    <LoadingIndicator v-if="globalStore.loading" />
+    <LoadingIndicator v-if="isLoading.loading" />
     <div v-else>
       <div v-if="post && post.user" class="mt-6">
         <div class="bg-white shadow-lg rounded-lg p-6 mb-6 relative">

@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <div class="p-6 mb-6 text-center flex items-center justify-center min-h-[50vh]">
+  <div class="fixed inset-0 flex items-center justify-center">
     <div class="flex flex-col items-center">
       <svg
         class="animate-spin h-8 w-8 text-gray-600 mb-4"
