@@ -2,6 +2,7 @@
 import { reactive, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
+import ButtonLoading from "@/components/ButtonLoading.vue";
 
 //use if all of the function/action in auth.js is used in this file
 //this is always reactive
@@ -12,6 +13,7 @@ const { errors } = storeToRefs(useAuthStore());
 //if there is only function that is used, you can extract the function by using this
 //but this is not reactive anymore(don't load in UI)
 const { authenticate } = useAuthStore();
+const isLoading = useAuthStore();
 
 const formData = reactive({
   name: "",
@@ -51,7 +53,10 @@ onMounted(() => (errors.value = {}));
         />
       </div>
       <div>
-        <button class="primary-btn">Register</button>
+        <button class="primary-btn">
+          <span v-if="!isLoading.loading">Register</span>
+          <ButtonLoading v-else />
+        </button>
       </div>
     </form>
   </main>

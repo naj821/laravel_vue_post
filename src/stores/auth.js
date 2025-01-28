@@ -7,11 +7,13 @@ export const useAuthStore = defineStore("authStore", {
             user: null,
             errors: {},
             router: useRouter(),
+            loading: false,
         }
     },
     actions: {
         //*************** LOGIN OR REGISTER USE **********************/
         async authenticate(apiRoute, formData) {
+            this.loading = true;
             const res = await fetch(`/api/${apiRoute}`, {
                 method: "post",
                 headers: {
@@ -21,6 +23,7 @@ export const useAuthStore = defineStore("authStore", {
             });
 
             const data = await res.json();
+            
             if(data.errors){
                 this.errors = data.errors
             } else {
@@ -28,9 +31,9 @@ export const useAuthStore = defineStore("authStore", {
                 localStorage.setItem('token', data.token);
                 this.user = data.user;
                 console.log("User has been logged in");
-                // Remove window.location.reload();
                 this.router.push({ name: "home" });
             }
+            this.loading = false;
         },
         //**************** GET AUTHENTICATED USER ******************* */
         async getUser() {
@@ -49,6 +52,7 @@ export const useAuthStore = defineStore("authStore", {
         },
         //*********************** LOG OUT USER **********************/
         async logout() {
+            this.loading = true;
             if(localStorage.getItem("token")) {
                 const res = await fetch("/api/logout", {
                     method: "post",
@@ -58,6 +62,7 @@ export const useAuthStore = defineStore("authStore", {
                 });
 
                 const data = await res.json();
+                this.loading = false;
                 if(res.ok) {
                     this.user = null;
                     this.errors = {};
@@ -68,6 +73,7 @@ export const useAuthStore = defineStore("authStore", {
                 }
                 console.log(data);
             }
+            
         }
     }
 })

@@ -2,9 +2,11 @@
 import { useAuthStore } from "@/stores/auth";
 import { onMounted, reactive } from "vue";
 import { storeToRefs } from "pinia";
+import ButtonLoading from "@/components/ButtonLoading.vue";
 
 const { authenticate } = useAuthStore();
 const { errors } = storeToRefs(useAuthStore());
+const isLoading = useAuthStore();
 
 const formData = reactive({
   email: "",
@@ -27,7 +29,10 @@ onMounted(() => (errors.value = {}));
       <div>
         <input type="password" placeholder="Password" v-model="formData.password" />
       </div>
-      <button class="primary-btn">Login</button>
+      <button class="primary-btn">
+        <span v-if="!isLoading.loading">Login</span>
+        <ButtonLoading v-else />
+      </button>
     </form>
   </main>
 </template>
