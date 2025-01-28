@@ -1,17 +1,10 @@
 <script setup>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import ButtonLoading from "@/components/ButtonLoading.vue";
 
-//use if all of the function/action in auth.js is used in this file
-//this is always reactive
-// const authStore = useAuthStore();
-//another approach for extracting the function at the same time it is reactive
 const { errors } = storeToRefs(useAuthStore());
-
-//if there is only function that is used, you can extract the function by using this
-//but this is not reactive anymore(don't load in UI)
 const { authenticate } = useAuthStore();
 const isLoading = useAuthStore();
 
@@ -21,6 +14,19 @@ const formData = reactive({
   password: "",
   password_confirmation: "",
 });
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+import { ref, watch } from "vue";
+
+const emailError = ref("");
+
+watch(
+  () => formData.email,
+  (newEmail) => {
+    emailError.value = !emailRegex.test(newEmail) ? "Invalid email format" : "";
+  }
+);
 
 onMounted(() => (errors.value = {}));
 </script>
@@ -40,6 +46,7 @@ onMounted(() => (errors.value = {}));
       <div>
         <input type="text" placeholder="Email" v-model="formData.email" />
         <p v-if="errors.email" class="error">{{ errors.email[0] }}</p>
+        <p v-if="emailError" class="error">{{ emailError }}</p>
       </div>
       <div>
         <input type="password" placeholder="Password" v-model="formData.password" />
@@ -53,7 +60,7 @@ onMounted(() => (errors.value = {}));
         />
       </div>
       <div>
-        <button class="primary-btn">
+        <button class="primary-btn" :disabled="emailError">
           <span v-if="!isLoading.loading">Register</span>
           <ButtonLoading v-else />
         </button>
