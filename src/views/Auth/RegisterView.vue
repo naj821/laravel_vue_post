@@ -1,8 +1,9 @@
 <script setup>
-import { reactive, onMounted, computed } from "vue";
+import { reactive, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import ButtonLoading from "@/components/ButtonLoading.vue";
+import { ref, watch } from "vue";
 
 const { errors } = storeToRefs(useAuthStore());
 const { authenticate } = useAuthStore();
@@ -16,8 +17,6 @@ const formData = reactive({
 });
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-import { ref, watch } from "vue";
 
 const emailError = ref("");
 
