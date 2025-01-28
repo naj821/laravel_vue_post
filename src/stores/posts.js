@@ -108,16 +108,22 @@ export const usePostsStore = defineStore("postsStore", {
         },
         /*********** SEARCH A POST ******************/
         async searchPost(post) {
-            this.loading = true;
-            const res = await fetch(`/api/search?query=${post}`);
-            const data = await res.json();
-            this.loading = false;
-
-            if(res.ok){
-                return data;
-            } else {
-                this.errors = data;
-                return [];
+            
+            try{
+                this.loading = true;
+                const res = await fetch(`/api/search?query=${post}`);
+                const data = await res.json();
+                this.loading = false;
+    
+                if(res.ok){
+                    return data;
+                } else {
+                    this.errors = data;
+                    console.log(data);
+                    return [];
+                }
+            } catch(error){
+                console.log(error);
             }
         },
     }

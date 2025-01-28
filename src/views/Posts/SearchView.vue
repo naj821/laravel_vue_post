@@ -1,18 +1,19 @@
 <script setup>
 import { usePostsStore } from "@/stores/posts";
-import { ref, watchEffect } from "vue";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+import LoadingIndicator from "@/components/LoadingGlobal.vue";
 
 const { searchPost } = usePostsStore();
 const searchedQuery = ref("");
 const searchResults = ref([]);
+const { errors } = storeToRefs(usePostsStore());
+const isLoading = usePostsStore();
 
 //To Trigger the search
 const performSearch = async () => {
   searchResults.value = await searchPost(searchedQuery.value);
 };
-// watchEffect(() => {
-//   performSearch();
-// });
 </script>
 
 <template>
@@ -50,28 +51,39 @@ const performSearch = async () => {
     </div>
   </div>
   <!-- REAL -->
-
-  <div v-if="searchResults.data">
+  <LoadingIndicator v-if="isLoading.loading" />
+  <div v-else>
+    <div v-if="searchResults.data">
+      <div
+        v-for="post in searchResults.data"
+        :key="post.id"
+        class="bg-white shadow-lg rounded-lg p-6 mb-6 transition-transform transform hover:scale-105 relative"
+      >
+        <h2 class="text-3xl font-semibold mb-3 text-indigo-600">{{ post.title }}</h2>
+        <p class="text-gray-500 mb-2 absolute top-0 right-0 mt-4 mr-4">
+          Posted by <span class="font-medium text-gray-700">{{ post.user.name }}</span>
+        </p>
+        <p class="text-gray-700 leading-relaxed">{{ post.content }}</p>
+        <RouterLink :to="{ name: 'home' }" class="text-indigo-500 hover:underline">
+          Read more
+        </RouterLink>
+      </div>
+    </div>
     <div
-      v-for="post in searchResults.data"
-      :key="post.id"
-      class="bg-white shadow-lg rounded-lg p-6 mb-6 transition-transform transform hover:scale-105 relative"
+      v-else
+      class="p-6 mb-6 text-center flex items-center justify-center min-h-[50vh]"
     >
-      <h2 class="text-3xl font-semibold mb-3 text-indigo-600">{{ post.title }}</h2>
-      <p class="text-gray-500 mb-2 absolute top-0 right-0 mt-4 mr-4">
-        Posted by <span class="font-medium text-gray-700">{{ post.user.name }}</span>
-      </p>
-      <p class="text-gray-700 leading-relaxed">{{ post.content }}</p>
-      <RouterLink :to="{ name: 'home' }" class="text-indigo-500 hover:underline">
-        Read more
-      </RouterLink>
+      <div>
+        <h2
+          v-if="errors.data && searchedQuery !== ''"
+          class="text-2xl font-semibold mb-3 text-gray-600"
+        >
+          {{ errors.data }}
+        </h2>
+        <p v-else class="text-gray-500">Search something.</p>
+      </div>
     </div>
   </div>
-  <div v-else class="p-6 mb-6 text-center flex items-center justify-center min-h-[50vh]">
-    <div>
-      <h2 class="text-2xl font-semibold mb-3 text-gray-600">Post does not exist</h2>
-      <p class="text-gray-500">Please check back later.</p>
-    </div>
-  </div>
+
   <!--REAL  -->
 </template>
